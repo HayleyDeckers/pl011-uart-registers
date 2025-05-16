@@ -1,3 +1,4 @@
+#![no_std]
 //! this crate implements the registers of the [ARM PrimeCell UART (PL011)](https://developer.arm.com/documentation/ddi0183/g) peripheral
 //! it doesn't implement the full peripheral, just the registers. Making it easier to write your own drivers :)
 
@@ -52,6 +53,26 @@ pub struct UART<T: BaseAddress> {
 //     flag_register: FlagRegister,
 //     #[register(0x20, RW)]
 //     irda_low_power_register: IrDALowPowerRegister,
+//     #[register(0x24, RW)]
+//     integer_baud_rate_divisor_register: IntegerBaudRateDivisorRegister,
+//     #[register(0x28, RW)]
+//     fractional_baud_rate_divisor_register: FractionalBaudRateDivisorRegister,
+//     #[register(0x2C, RW)]
+//     line_control_register: LineControlRegister,
+//     #[register(0x30, RW)]
+//     control_register: ControlRegister,
+//     #[register(0x34, RW)]
+//     interrupt_fifo_level_select_register: InterruptFIFOLevelSelectRegister,
+//     #[register(0x38, RW)]
+//     interrupt_mask_set_clear_register: InterruptMaskSetClearRegister,
+//     #[register(0x3C, RO)]
+//     raw_interrupt_status_register: RawInterruptStatusRegister,
+//     #[register(0x40, RO)]
+//     masked_interrupt_status_register: MaskedInterruptStatusRegister,
+//     #[register(0x44, WO)]
+//     interrupt_clear_register: InterruptClearRegister,
+//     #[register(0x48, RW)]
+//     dma_control_register: DMAControlRegister,
 // }
 // ```
 
