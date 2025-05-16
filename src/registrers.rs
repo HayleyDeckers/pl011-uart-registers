@@ -273,11 +273,11 @@ pub struct ControlRegister {
     /// If this bit is set to `true`, CTS hardware flow control is enabled. Data is only transmitted when the nUARTCTS signal is asserted.
     #[bitstuff(bit = 15)]
     #[allow(non_snake_case)]
-    CTS_hardware_flow_control_enable: bool,
+    cts_hardware_flow_control_enable: bool,
     /// If this bit is set to `true`, RTS hardware flow control is enabled. Data is only requested when there is space in the receive FIFO for it to be received.
     #[bitstuff(bit = 14)]
     #[allow(non_snake_case)]
-    RTS_hardware_flow_control_enable: bool,
+    rts_hardware_flow_control_enable: bool,
     /// This bit is the complement of the UART Out2 (nUARTOut2) modem status output. That is, when the bit is programmed to `true`, the output is 0.
     /// For DTE this can be used as Ring Indicator (RI).
     #[bitstuff(bit = 13)]
@@ -312,13 +312,13 @@ pub struct ControlRegister {
     /// This bit has no effect if the UARTEN bit disables the UART.
     #[bitstuff(bit = 1)]
     #[allow(non_snake_case)]
-    SIR_enable: bool,
+    sir_enable: bool,
     /// UART enable:
     /// - `false` = UART is disabled. If the UART is disabled in the middle of transmission or reception, it completes the current character before stopping.
     /// - `true` = the UART is enabled. Data transmission and reception occurs for either UART signals or SIR signals depending on the setting of the SIREN bit.
     #[bitstuff(bit = 0)]
     #[allow(non_snake_case)]
-    UART_enable: bool,
+    uart_enable: bool,
 }
 
 /// Receive and transmit interrupt FIFO level select trigger points.
@@ -360,48 +360,207 @@ pub struct InterruptFIFOLevelSelectRegister {
     /// Receive FIFO interrupt level select.
     #[bitstuff(bits = 3..=5, falliable)]
     #[allow(non_snake_case)]
-    receive_interrupt_FIFO_level_select: FIFOLevelSelect,
+    receive_interrupt_fifo_level_select: FIFOLevelSelect,
     /// Transmit FIFO interrupt level select.
     #[bitstuff(bits = 0..=2, falliable)]
     #[allow(non_snake_case)]
-    transmit_interrupt_FIFO_level_select: FIFOLevelSelect,
+    transmit_interrupt_fifo_level_select: FIFOLevelSelect,
 }
 
 /// The UARTIMSC Register; the interrupt mask set/clear register.
 ///
-/// It is a read/write register.
-///
-/// On a read this register returns the current value of the mask on the relevant interrupt.
-/// On a write of 1 to the particular bit, it sets the corresponding mask of that interrupt.
-/// A write of 0 clears the corresponding mask.
-///
-/// All the bits are cleared to 0 when reset.
+/// This register controls which interrupt sources are enabled (unmasked).
+/// On a read, this register returns the current value of the interrupt masks.
+/// Writing true to a bit sets the corresponding mask (enables the interrupt), writing false clears it (disables the interrupt).
+/// All bits are cleared to false on reset.
 #[bitstuff::stuff(u16)]
 pub struct InterruptMaskSetClearRegister {
+    /// Overrun error interrupt mask. When true, the overrun error interrupt is enabled.
     #[bitstuff(bit = 10)]
     overrun_error_interrupt_mask: bool,
+    /// Break error interrupt mask. When true, the break error interrupt is enabled.
     #[bitstuff(bit = 9)]
     break_error_interrupt_mask: bool,
+    /// Parity error interrupt mask. When true, the parity error interrupt is enabled.
     #[bitstuff(bit = 8)]
     parity_error_interrupt_mask: bool,
+    /// Framing error interrupt mask. When true, the framing error interrupt is enabled.
     #[bitstuff(bit = 7)]
     framing_error_interrupt_mask: bool,
+    /// Receive timeout interrupt mask. When true, the receive timeout interrupt is enabled.
     #[bitstuff(bit = 6)]
     receive_timeout_interrupt_mask: bool,
+    /// Transmit interrupt mask. When true, the transmit interrupt is enabled.
     #[bitstuff(bit = 5)]
     transmit_interrupt_mask: bool,
+    /// Receive interrupt mask. When true, the receive interrupt is enabled.
     #[bitstuff(bit = 4)]
     receive_interrupt_mask: bool,
+    /// nUARTDSR modem interrupt mask. When true, the nUARTDSR modem interrupt is enabled.
     #[bitstuff(bit = 3)]
     #[allow(non_snake_case)]
-    nUARTDSR_modem_interrupt_mask: bool,
+    n_uartdsr_modem_interrupt_mask: bool,
+    /// nUARTDCD modem interrupt mask. When true, the nUARTDCD modem interrupt is enabled.
     #[bitstuff(bit = 2)]
     #[allow(non_snake_case)]
-    nUARTDCD_modem_interrupt_mask: bool,
+    n_uartdcd_modem_interrupt_mask: bool,
+    /// nUARTCTS modem interrupt mask. When true, the nUARTCTS modem interrupt is enabled.
     #[bitstuff(bit = 1)]
     #[allow(non_snake_case)]
-    nUARTCTS_modem_interrupt_mask: bool,
+    n_uartcts_modem_interrupt_mask: bool,
+    /// nUARTRI modem interrupt mask. When true, the nUARTRI modem interrupt is enabled.
     #[bitstuff(bit = 0)]
     #[allow(non_snake_case)]
-    nUARTRI_modem_interrupt_mask: bool,
+    n_uartri_modem_interrupt_mask: bool,
+}
+
+/// The UARTRIS Register; the raw interrupt status register.
+///
+/// This register shows the status of the UART interrupt sources prior to masking.
+/// Each bit corresponds to a different interrupt source. A bit is set to true if the corresponding interrupt is asserted.
+#[bitstuff::stuff(u16)]
+pub struct RawInterruptStatusRegister {
+    /// Overrun error interrupt status (raw).
+    #[bitstuff(bit = 10)]
+    overrun_error_raw_interrupt: bool,
+    /// Break error interrupt status (raw).
+    #[bitstuff(bit = 9)]
+    break_error_raw_interrupt: bool,
+    /// Parity error interrupt status (raw).
+    #[bitstuff(bit = 8)]
+    parity_error_raw_interrupt: bool,
+    /// Framing error interrupt status (raw).
+    #[bitstuff(bit = 7)]
+    framing_error_raw_interrupt: bool,
+    /// Receive timeout interrupt status (raw).
+    #[bitstuff(bit = 6)]
+    receive_timeout_raw_interrupt: bool,
+    /// Transmit interrupt status (raw).
+    #[bitstuff(bit = 5)]
+    transmit_raw_interrupt: bool,
+    /// Receive interrupt status (raw).
+    #[bitstuff(bit = 4)]
+    receive_raw_interrupt: bool,
+    /// nUARTDSR modem interrupt status (raw).
+    #[bitstuff(bit = 3)]
+    #[allow(non_snake_case)]
+    n_uartdsr_modem_raw_interrupt: bool,
+    /// nUARTDCD modem interrupt status (raw).
+    #[bitstuff(bit = 2)]
+    #[allow(non_snake_case)]
+    n_uartdcd_modem_raw_interrupt: bool,
+    /// nUARTCTS modem interrupt status (raw).
+    #[bitstuff(bit = 1)]
+    #[allow(non_snake_case)]
+    n_uartcts_modem_raw_interrupt: bool,
+    /// nUARTRI modem interrupt status (raw).
+    #[bitstuff(bit = 0)]
+    #[allow(non_snake_case)]
+    n_uartri_modem_raw_interrupt: bool,
+}
+
+/// The UARTMIS Register; the masked interrupt status register.
+///
+/// This register shows the status of the UART interrupt sources after masking by the interrupt mask register.
+/// Each bit is set to true if the corresponding interrupt is asserted and not masked.
+#[bitstuff::stuff(u16)]
+pub struct MaskedInterruptStatusRegister {
+    /// Overrun error interrupt status (masked).
+    #[bitstuff(bit = 10)]
+    overrun_error_interrupt_mask: bool,
+    /// Break error interrupt status (masked).
+    #[bitstuff(bit = 9)]
+    break_error_interrupt_mask: bool,
+    /// Parity error interrupt status (masked).
+    #[bitstuff(bit = 8)]
+    parity_error_interrupt_mask: bool,
+    /// Framing error interrupt status (masked).
+    #[bitstuff(bit = 7)]
+    framing_error_interrupt_mask: bool,
+    /// Receive timeout interrupt status (masked).
+    #[bitstuff(bit = 6)]
+    receive_timeout_interrupt_mask: bool,
+    /// Transmit interrupt status (masked).
+    #[bitstuff(bit = 5)]
+    transmit_interrupt_mask: bool,
+    /// Receive interrupt status (masked).
+    #[bitstuff(bit = 4)]
+    receive_interrupt_mask: bool,
+    /// nUARTDSR modem interrupt status (masked).
+    #[bitstuff(bit = 3)]
+    #[allow(non_snake_case)]
+    n_uartdsr_modem_interrupt_mask: bool,
+    /// nUARTDCD modem interrupt status (masked).
+    #[bitstuff(bit = 2)]
+    #[allow(non_snake_case)]
+    n_uartdcd_modem_interrupt_mask: bool,
+    /// nUARTCTS modem interrupt status (masked).
+    #[bitstuff(bit = 1)]
+    #[allow(non_snake_case)]
+    n_uartcts_modem_interrupt_mask: bool,
+    /// nUARTRI modem interrupt status (masked).
+    #[bitstuff(bit = 0)]
+    #[allow(non_snake_case)]
+    n_uartri_modem_interrupt_mask: bool,
+}
+
+/// The UARTICR Register; the interrupt clear register.
+///
+/// Writing true to a bit in this register clears the corresponding interrupt in the raw interrupt status register.
+/// Reading this register always returns zero.
+#[bitstuff::stuff(u16)]
+pub struct InterruptClearRegister {
+    /// Clear overrun error interrupt.
+    #[bitstuff(bit = 10)]
+    clear_overrun_error_interrupt: bool,
+    /// Clear break error interrupt.
+    #[bitstuff(bit = 9)]
+    clear_break_error_interrupt: bool,
+    /// Clear parity error interrupt.
+    #[bitstuff(bit = 8)]
+    clear_parity_error_interrupt: bool,
+    /// Clear framing error interrupt.
+    #[bitstuff(bit = 7)]
+    clear_framing_error_interrupt: bool,
+    /// Clear receive timeout interrupt.
+    #[bitstuff(bit = 6)]
+    clear_receive_timeout_interrupt: bool,
+    /// Clear transmit interrupt.
+    #[bitstuff(bit = 5)]
+    clear_transmit_interrupt: bool,
+    /// Clear receive interrupt.
+    #[bitstuff(bit = 4)]
+    clear_receive_interrupt: bool,
+    /// Clear nUARTDSR modem interrupt.
+    #[bitstuff(bit = 3)]
+    #[allow(non_snake_case)]
+    clear_n_uartdsr_modem_interrupt: bool,
+    /// Clear nUARTDCD modem interrupt.
+    #[bitstuff(bit = 2)]
+    #[allow(non_snake_case)]
+    clear_n_uartdcd_modem_interrupt: bool,
+    /// Clear nUARTCTS modem interrupt.
+    #[bitstuff(bit = 1)]
+    #[allow(non_snake_case)]
+    clear_n_uartcts_modem_interrupt: bool,
+    /// Clear nUARTRI modem interrupt.
+    #[bitstuff(bit = 0)]
+    #[allow(non_snake_case)]
+    clear_n_uartri_modem_interrupt: bool,
+}
+
+/// The UARTDMACR Register; the DMA control register.
+///
+/// This register controls the enabling of DMA for the UART transmitter and receiver, and whether DMA is enabled on error.
+#[bitstuff::stuff(u8)]
+pub struct DMAControlRegister {
+    /// Enable DMA on error.
+    #[bitstuff(bit = 2)]
+    dma_on_error: bool,
+    /// Enable DMA for transmitter.
+    #[bitstuff(bit = 1)]
+    dma_transmit_enable: bool,
+    /// Enable DMA for receiver.
+    #[bitstuff(bit = 0)]
+    dma_receive_enable: bool,
 }
