@@ -1,0 +1,8 @@
+[package]
+name = "pl011-uart-registers"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bitstuff = { git = "https://github.com/HayleyDeckers/bitstuff.git" }
+# bitstuff = { path = "../bitpack" }
